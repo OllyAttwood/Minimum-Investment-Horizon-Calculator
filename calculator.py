@@ -3,9 +3,7 @@ import numpy as np
 from scipy.interpolate import make_interp_spline
 
 #calculates the compound returns for all periods (windows) of a given size in years
-def calculate_rolling_window_returns(window_size, index_annual_return_file_name):
-    annual_returns = pd.read_csv(index_annual_return_file_name)
-    annual_returns["Return"] = (annual_returns["Return"] / 100) + 1
+def calculate_rolling_window_returns(window_size, annual_returns):
     windows =  annual_returns.rolling(window=window_size)
 
     return windows["Return"].apply(np.prod)[window_size-1:] #trim the first window_size-1 rows as they're empty
@@ -44,26 +42,20 @@ def min_max_median(window_returns):
         "median": window_returns.median()
     }
 
-#DELETE this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-"""
-file_path = "/home/olly/Documents/programming/other/minimum_investment_horizon_calculator/data/sp500_annual_returns_slickcharts_com.csv"
-window_sizes = range(1,30)
-window_returns_list = [calculate_rolling_window_returns(window_size, file_path) for window_size in window_sizes]
-chance_of_profit_list = [calculate_chance_of_profit(window_returns) for window_returns in window_returns_list]
-print(chance_of_profit_list)
-plt.plot(chance_of_profit_list)
-#plt.plot(smooth_line(chance_of_profit_list))
-plt.show()
-print(window_returns_list)
-min_max_medians = [min_max_median(window_returns) for window_returns in window_returns_list]
-print(min_max_medians)
-"""
+#gets the annual returns data from the CSV file, then processes the data so it is
+#suitable for cumulatively multiplying to find the total return for a longer period
+def process_annual_returns_from_file_path(annual_returns_path):
+    annual_returns = pd.read_csv(annual_returns_path)
+    annual_returns["Return"] = (annual_returns["Return"] / 100) + 1
+
+    return annual_returns
 
 #function for the presenter class to call
 def get_profit_chances():
     file_path = "/home/olly/Documents/programming/other/minimum_investment_horizon_calculator/data/sp500_annual_returns_slickcharts_com.csv"
+    annual_returns = process_annual_returns_from_file_path(file_path)
     window_sizes = range(1,30)
-    window_returns_list = [calculate_rolling_window_returns(window_size, file_path) for window_size in window_sizes]
+    window_returns_list = [calculate_rolling_window_returns(window_size, annual_returns) for window_size in window_sizes]
     chance_of_profit_list = [calculate_chance_of_profit(window_returns) for window_returns in window_returns_list]
     print(chance_of_profit_list)
     print(window_returns_list)
