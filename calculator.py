@@ -9,12 +9,13 @@ def calculate_rolling_window_returns(window_size, annual_returns):
     return windows["Return"].apply(np.prod)[window_size-1:] #trim the first window_size-1 rows as they're empty
 
 #calculates the overall chance of making a profit from all the compound returns of a single window size
-def calculate_chance_of_profit(window_returns):
-    profit_loss_counts = (window_returns > 1).value_counts()
+def calculate_chance_of_profit(window_returns, minimum_profit_percentage_threshold=0):
+    minimum_profit_ratio_threshold = (minimum_profit_percentage_threshold / 100) + 1 #convert from percent to ratio e.g. 60% growth == 1.6 growth ratio
+    profit_loss_counts = (window_returns > minimum_profit_ratio_threshold).value_counts()
 
     #handles the condition where all the windows result in profits or all windows result in losses
     if len(profit_loss_counts) == 1:
-        if profit_loss_counts.keys()[0] == True: #explicitly included "== True" for clarity
+        if profit_loss_counts.keys()[0] == True: #explicitly included "== True" for readability
             return 100
         else:
             return 0
@@ -24,15 +25,6 @@ def calculate_chance_of_profit(window_returns):
     percentage_profit_windows = num_profit_windows / (num_profit_windows + num_loss_windows) * 100
 
     return percentage_profit_windows
-
-#produce a smoothed version of the graph line
-#see https://www.geeksforgeeks.org/how-to-plot-a-smooth-curve-in-matplotlib/
-def smooth_line(original_line):
-    x = np.array(range(len(original_line)))
-    spline = make_interp_spline(x, original_line)
-    x_increased_num_points = np.linspace(x.min(), x.max(), 500)
-
-    return spline(x_increased_num_points)
 
 #extracts the minimum, maximum and median values of a single window size
 def min_max_median(window_returns):
@@ -51,12 +43,12 @@ def process_annual_returns_from_file_path(annual_returns_path):
     return annual_returns
 
 #function for the presenter class to call
-def get_profit_chances():
+def get_profit_chances(minimum_profit_percentage_threshold=0):
     file_path = "/home/olly/Documents/programming/other/minimum_investment_horizon_calculator/data/sp500_annual_returns_slickcharts_com.csv"
     annual_returns = process_annual_returns_from_file_path(file_path)
     window_sizes = range(1,30)
     window_returns_list = [calculate_rolling_window_returns(window_size, annual_returns) for window_size in window_sizes]
-    chance_of_profit_list = [calculate_chance_of_profit(window_returns) for window_returns in window_returns_list]
+    chance_of_profit_list = [calculate_chance_of_profit(window_returns, minimum_profit_percentage_threshold) for window_returns in window_returns_list]
     print(chance_of_profit_list)
     print(window_returns_list)
     min_max_medians = [min_max_median(window_returns) for window_returns in window_returns_list]

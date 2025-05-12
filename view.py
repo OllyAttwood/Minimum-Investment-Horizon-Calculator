@@ -1,6 +1,36 @@
 import matplotlib.pyplot as plt
+from matplotlib.widgets import RadioButtons, TextBox
+import matplotlib
 
-def setup_display(chance_of_profit_list):
-    plt.plot(chance_of_profit_list)
-    #plt.plot(smooth_line(chance_of_profit_list))
-    plt.show()
+class View:
+    def __init__(self, presenter, chance_of_profit_list):
+        self.presenter = presenter
+        self.radio_button_options = ("Real Values", "Smoothed Values")
+        matplotlib.rcParams['toolbar'] = 'None' #removes matplotlib toolbar
+
+        self.fig, self.ax = plt.subplots()
+        self.fig.subplots_adjust(bottom=0.2) #increases bottom space
+
+        self.chart = plt.plot(chance_of_profit_list)[0]
+
+        radio_ax = plt.axes([0.59, 0.21, 0.3, 0.2])
+        radio_ax.set_facecolor("#90D5FF")
+        radio_buttons = RadioButtons(radio_ax, self.radio_button_options, active=0, activecolor="orange")
+        radio_buttons.on_clicked(self.index_radio_click)
+
+        button_ax = plt.axes([0.5, 0.05, 0.4, 0.075])
+        text_box = TextBox(button_ax, "Minimum profit threshold (%): ")
+        text_box.set_val("0")
+        text_box.on_submit(self.text_box_submit)
+
+        plt.show()
+
+    def index_radio_click(label):
+        pass
+
+    def text_box_submit(self, text):
+        new_chance_of_profit_list = self.presenter.get_chance_of_profit_list(float(text))
+        self.chart.set_ydata(new_chance_of_profit_list)
+        self.ax.relim() #MAYBE REMOVE THIS LINE AND THE ONE AFTER IF THE X AND Y LABELS ARE CHANGED TO BE FIXED - currently they resize the graph each time
+        self.ax.autoscale_view()
+        self.fig.canvas.draw_idle()
