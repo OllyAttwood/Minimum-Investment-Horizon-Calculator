@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.widgets import RadioButtons, TextBox
 import matplotlib
+from tkinter import messagebox, Tk
 
 class View:
     def __init__(self, presenter, chance_of_profit_list):
@@ -29,8 +30,13 @@ class View:
         pass
 
     def text_box_submit(self, text):
-        new_chance_of_profit_list = self.presenter.get_chance_of_profit_list(float(text))
-        self.chart.set_ydata(new_chance_of_profit_list)
-        self.ax.relim() #MAYBE REMOVE THIS LINE AND THE ONE AFTER IF THE X AND Y LABELS ARE CHANGED TO BE FIXED - currently they resize the graph each time
-        self.ax.autoscale_view()
-        self.fig.canvas.draw_idle()
+        try:
+            new_chance_of_profit_list = self.presenter.get_chance_of_profit_list(float(text))
+            self.chart.set_ydata(new_chance_of_profit_list)
+            self.ax.relim() #MAYBE REMOVE THIS LINE AND THE ONE AFTER IF THE X AND Y LABELS ARE CHANGED TO BE FIXED - currently they resize the graph each time
+            self.ax.autoscale_view()
+            self.fig.canvas.draw_idle()
+        except ValueError:
+            root = Tk()
+            root.withdraw() #the root has to be created and withrawn otherwise a blank window will appear in the background
+            messagebox.showerror("Input Error", "Only numbers are allowed!")
