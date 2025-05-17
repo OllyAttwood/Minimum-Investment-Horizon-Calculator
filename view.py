@@ -14,6 +14,7 @@ class View:
 
         self.chart = plt.plot(chance_of_profit_list)[0]
         plt.ylim(top=105, bottom=0) #top is 105 rather than 100 so the graph line is still visible at 100
+        plt.xlim(left=0)
 
         radio_ax = plt.axes([0.59, 0.21, 0.3, 0.2])
         radio_ax.set_facecolor("#90D5FF")
