@@ -21,10 +21,10 @@ class View:
         radio_buttons = RadioButtons(radio_ax, self.radio_button_options, active=0, activecolor="orange")
         radio_buttons.on_clicked(self.index_radio_click)
 
-        button_ax = plt.axes([0.5, 0.05, 0.4, 0.075])
-        text_box = TextBox(button_ax, "Minimum profit threshold (%): ")
-        text_box.set_val("0")
-        text_box.on_submit(self.text_box_submit)
+        min_threshold_textbox_ax = plt.axes([0.5, 0.05, 0.4, 0.075])
+        min_threshold_textbox = TextBox(min_threshold_textbox_ax, "Minimum profit threshold (%): ")
+        min_threshold_textbox.set_val("0")
+        min_threshold_textbox.on_submit(self.text_box_submit)
 
         plt.show()
 
