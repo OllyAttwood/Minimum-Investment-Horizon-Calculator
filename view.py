@@ -10,21 +10,26 @@ class View:
         matplotlib.rcParams['toolbar'] = 'None' #removes matplotlib toolbar
 
         self.fig, self.ax = plt.subplots()
-        self.fig.subplots_adjust(bottom=0.2) #increases bottom space
+        self.fig.set_figheight(6)
+        self.fig.subplots_adjust(bottom=0.3) #increases bottom space
 
         self.chart = plt.plot(chance_of_profit_list)[0]
         plt.ylim(top=105, bottom=0) #top is 105 rather than 100 so the graph line is still visible at 100
         plt.xlim(left=0)
 
-        radio_ax = plt.axes([0.59, 0.21, 0.3, 0.2])
+        radio_ax = plt.axes([0.59, 0.31, 0.3, 0.2])
         radio_ax.set_facecolor("#90D5FF")
         radio_buttons = RadioButtons(radio_ax, self.radio_button_options, active=0, activecolor="orange")
         radio_buttons.on_clicked(self.index_radio_click)
 
-        min_threshold_textbox_ax = plt.axes([0.5, 0.05, 0.4, 0.075])
+        min_threshold_textbox_ax = plt.axes([0.5, 0.15, 0.4, 0.075])
         self.min_threshold_textbox = TextBox(min_threshold_textbox_ax, "Minimum profit threshold (%): ")
         self.min_threshold_textbox.set_val("0")
         self.min_threshold_textbox.on_submit(self.min_threshold_update)
+
+        inflation_textbox_ax = plt.axes([0.5, .05, 0.4, 0.075])
+        self.inflation_textbox = TextBox(inflation_textbox_ax, "Adjust for inflation of: ")
+        self.inflation_textbox.set_val("0")
 
         plt.show()
 
