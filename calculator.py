@@ -36,16 +36,17 @@ def min_max_median(window_returns):
 
 #gets the annual returns data from the CSV file, then processes the data so it is
 #suitable for cumulatively multiplying to find the total return for a longer period
-def process_annual_returns_from_file_path(annual_returns_path):
+def process_annual_returns_from_file_path(annual_returns_path, inflation):
     annual_returns = pd.read_csv(annual_returns_path)
     annual_returns["Return"] = (annual_returns["Return"] / 100) + 1
+    annual_returns["Return"] = annual_returns["Return"] - (inflation / 100) #apply inflation to data
 
     return annual_returns
 
 #function for the presenter class to call
-def get_profit_chances(minimum_profit_percentage_threshold=0):
+def get_profit_chances(minimum_profit_percentage_threshold=0, inflation=0):
     file_path = "/home/olly/Documents/programming/other/minimum_investment_horizon_calculator/data/sp500_annual_returns_slickcharts_com.csv"
-    annual_returns = process_annual_returns_from_file_path(file_path)
+    annual_returns = process_annual_returns_from_file_path(file_path, inflation)
     window_sizes = range(1,30)
     window_returns_list = [calculate_rolling_window_returns(window_size, annual_returns) for window_size in window_sizes]
     chance_of_profit_list = [calculate_chance_of_profit(window_returns, minimum_profit_percentage_threshold) for window_returns in window_returns_list]
