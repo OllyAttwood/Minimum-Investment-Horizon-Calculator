@@ -31,7 +31,7 @@ class View:
         self.min_threshold_textbox.on_submit(self.min_threshold_update)
 
         inflation_textbox_ax = plt.axes([0.5, .05, 0.4, 0.075])
-        self.inflation_textbox = TextBox(inflation_textbox_ax, "Adjust for inflation of: ")
+        self.inflation_textbox = TextBox(inflation_textbox_ax, "Adjust for inflation of (%): ")
         self.inflation_textbox.set_val(str(self.current_inflation))
         self.inflation_textbox.on_submit(self.inflation_update)
 
