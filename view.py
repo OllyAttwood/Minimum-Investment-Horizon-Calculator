@@ -5,9 +5,6 @@ from tkinter import messagebox, Tk
 
 class View:
     def __init__(self, presenter, chance_of_profit_list):
-        self.current_min_profit_threshold = 0
-        self.current_inflation = 0
-
         self.presenter = presenter
         self.radio_button_options = ("Real Values", "Smoothed Values")
         matplotlib.rcParams['toolbar'] = 'None' #removes matplotlib toolbar
@@ -27,50 +24,33 @@ class View:
 
         min_threshold_textbox_ax = plt.axes([0.5, 0.15, 0.4, 0.075])
         self.min_threshold_textbox = TextBox(min_threshold_textbox_ax, "Minimum profit threshold (%): ")
-        self.min_threshold_textbox.set_val(str(self.current_min_profit_threshold))
-        self.min_threshold_textbox.on_submit(self.min_threshold_update)
+        self.min_threshold_textbox.set_val(str(0))
+        #self.min_threshold_textbox.on_submit(self.chance_of_profit_settings_update)
+        self.min_threshold_textbox.on_submit(lambda text: self.chance_of_profit_settings_update(text, self.min_threshold_textbox))
 
         inflation_textbox_ax = plt.axes([0.5, .05, 0.4, 0.075])
         self.inflation_textbox = TextBox(inflation_textbox_ax, "Adjust for inflation of (%): ")
-        self.inflation_textbox.set_val(str(self.current_inflation))
-        self.inflation_textbox.on_submit(self.inflation_update)
+        self.inflation_textbox.set_val(0)
+        self.inflation_textbox.on_submit(lambda text: self.chance_of_profit_settings_update(text, self.inflation_textbox))
 
         plt.show()
 
     def index_radio_click(label):
         pass
 
-    def min_threshold_update(self, text):
+    def chance_of_profit_settings_update(self, text, textbox):
         try:
             #remove leading zero if there is one
             if len(text) > 1 and text[0] == "0":
-                self.min_threshold_textbox.set_val(text[1:])
+                textbox.set_val(text[1:])
 
             #update graph
-            new_min_profit_threshold = float(text)
-            new_chance_of_profit_list = self.presenter.get_chance_of_profit_list(new_min_profit_threshold, self.current_inflation)
+            new_min_profit_threshold = float(self.min_threshold_textbox.text)
+            new_inflation = float(self.inflation_textbox.text)
+            new_chance_of_profit_list = self.presenter.get_chance_of_profit_list(new_min_profit_threshold, new_inflation)
             self.chart.set_ydata(new_chance_of_profit_list)
             self.fig.canvas.draw_idle() #forces the graph to redraw with the new data
 
-            self.current_min_profit_threshold = new_min_profit_threshold
-        except ValueError:
-            root = Tk()
-            root.withdraw() #the root has to be created and withrawn otherwise a blank window will appear in the background
-            messagebox.showerror("Input Error", "Only numbers are allowed!")
-
-    def inflation_update(self, text):
-        try:
-            #remove leading zero if there is one
-            if len(text) > 1 and text[0] == "0":
-                self.inflation_textbox.set_val(text[1:])
-
-            #update graph
-            new_inflation = float(text)
-            new_chance_of_profit_list = self.presenter.get_chance_of_profit_list(self.current_min_profit_threshold, new_inflation)
-            self.chart.set_ydata(new_chance_of_profit_list)
-            self.fig.canvas.draw_idle() #forces the graph to redraw with the new data
-
-            self.current_inflation = new_inflation
         except ValueError:
             root = Tk()
             root.withdraw() #the root has to be created and withrawn otherwise a blank window will appear in the background
