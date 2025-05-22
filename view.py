@@ -4,9 +4,9 @@ import matplotlib
 from tkinter import messagebox, Tk
 
 class View:
-    def __init__(self, presenter, chance_of_profit_list):
+    def __init__(self, presenter, chance_of_profit_list, index_names):
         self.presenter = presenter
-        self.indices_checkbutton_options = ("S&P 500", "Index2", "Index3", "Index4")
+        self.indices_checkbutton_options = index_names
         matplotlib.rcParams['toolbar'] = 'None' #removes matplotlib toolbar
 
         self.fig, self.ax = plt.subplots()
@@ -17,7 +17,7 @@ class View:
         plt.ylim(top=105, bottom=0) #top is 105 rather than 100 so the graph line is still visible at 100
         plt.xlim(left=0)
 
-        indices_ax = plt.axes([0.59, 0.31, 0.3, 0.2])
+        indices_ax = plt.axes([0.5, 0.31, 0.39, 0.2])
         indices_ax.set_facecolor("#90D5FF")
         indices_checkbuttons = CheckButtons(indices_ax, self.indices_checkbutton_options)
         #modify the checkboxes appearance - https://stackoverflow.com/questions/42421363/customize-check-buttons-in-matplotlib
