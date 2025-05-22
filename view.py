@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
-from matplotlib.widgets import RadioButtons, TextBox
+from matplotlib.widgets import CheckButtons, TextBox
 import matplotlib
 from tkinter import messagebox, Tk
 
 class View:
     def __init__(self, presenter, chance_of_profit_list):
         self.presenter = presenter
-        self.radio_button_options = ("Real Values", "Smoothed Values")
+        self.indices_checkbutton_options = ("S&P 500", "Index2", "Index3", "Index4")
         matplotlib.rcParams['toolbar'] = 'None' #removes matplotlib toolbar
 
         self.fig, self.ax = plt.subplots()
@@ -17,15 +17,16 @@ class View:
         plt.ylim(top=105, bottom=0) #top is 105 rather than 100 so the graph line is still visible at 100
         plt.xlim(left=0)
 
-        radio_ax = plt.axes([0.59, 0.31, 0.3, 0.2])
-        radio_ax.set_facecolor("#90D5FF")
-        radio_buttons = RadioButtons(radio_ax, self.radio_button_options, active=0, activecolor="orange")
-        radio_buttons.on_clicked(self.index_radio_click)
+        indices_ax = plt.axes([0.59, 0.31, 0.3, 0.2])
+        indices_ax.set_facecolor("#90D5FF")
+        indices_checkbuttons = CheckButtons(indices_ax, self.indices_checkbutton_options)
+        #modify the checkboxes appearance - https://stackoverflow.com/questions/42421363/customize-check-buttons-in-matplotlib
+        indices_checkbuttons.set_active(0)
+        indices_checkbuttons.on_clicked(self.indices_checkbutton_click)
 
         min_threshold_textbox_ax = plt.axes([0.5, 0.15, 0.4, 0.075])
         self.min_threshold_textbox = TextBox(min_threshold_textbox_ax, "Minimum profit threshold (%): ")
         self.min_threshold_textbox.set_val(str(0))
-        #self.min_threshold_textbox.on_submit(self.chance_of_profit_settings_update)
         self.min_threshold_textbox.on_submit(lambda text: self.chance_of_profit_settings_update(text, self.min_threshold_textbox))
 
         inflation_textbox_ax = plt.axes([0.5, .05, 0.4, 0.075])
@@ -35,7 +36,7 @@ class View:
 
         plt.show()
 
-    def index_radio_click(label):
+    def indices_checkbutton_click(self, label):
         pass
 
     def chance_of_profit_settings_update(self, text, textbox):
