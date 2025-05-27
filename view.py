@@ -23,6 +23,8 @@ class View:
             self.chart_lines[i] = plt.plot(line_data)[0]
         plt.ylim(top=105, bottom=0) #top is 105 rather than 100 so the graph line is still visible at 100
         plt.xlim(left=0)
+        x_tick_positions = [0,4,9,14,19,24,29]
+        self.ax.set_xticks(ticks=x_tick_positions, labels=[tick+1 for tick in x_tick_positions])
 
         indices_ax = plt.axes([0.5, 0.31, 0.39, 0.2])
         indices_ax.set_facecolor("#90D5FF")
