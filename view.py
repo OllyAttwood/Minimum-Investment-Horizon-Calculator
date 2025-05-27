@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import CheckButtons, TextBox
 import matplotlib
 from tkinter import messagebox, Tk
+import numpy as np
 
 class View:
     def __init__(self, presenter, chance_of_profit_list, index_names):
@@ -13,16 +14,22 @@ class View:
         self.fig.set_figheight(6)
         self.fig.subplots_adjust(bottom=0.3) #increases bottom space
 
-        self.chart = plt.plot(chance_of_profit_list)[0]
+        self.chart_lines = [[]] * len(index_names)
+        for i in range(len(index_names)):
+            line_data = [np.nan] * len(chance_of_profit_list) #initialise it with an empty line of the correct number of points
+            if i == 0:
+                line_data = chance_of_profit_list
+
+            self.chart_lines[i] = plt.plot(line_data)[0]
         plt.ylim(top=105, bottom=0) #top is 105 rather than 100 so the graph line is still visible at 100
         plt.xlim(left=0)
 
         indices_ax = plt.axes([0.5, 0.31, 0.39, 0.2])
         indices_ax.set_facecolor("#90D5FF")
-        indices_checkbuttons = CheckButtons(indices_ax, self.indices_checkbutton_options)
+        self.indices_checkbuttons = CheckButtons(indices_ax, self.indices_checkbutton_options)
         #modify the checkboxes appearance - https://stackoverflow.com/questions/42421363/customize-check-buttons-in-matplotlib
-        indices_checkbuttons.set_active(0)
-        indices_checkbuttons.on_clicked(self.indices_checkbutton_click)
+        self.indices_checkbuttons.set_active(0)
+        self.indices_checkbuttons.on_clicked(lambda label: self.recalculate_graph()) #label parameter is not needed
 
         min_threshold_textbox_ax = plt.axes([0.5, 0.15, 0.4, 0.075])
         self.min_threshold_textbox = TextBox(min_threshold_textbox_ax, "Minimum profit threshold (%): ")
@@ -36,23 +43,40 @@ class View:
 
         plt.show()
 
-    def indices_checkbutton_click(self, label):
-        pass
-
     def chance_of_profit_settings_update(self, text, textbox):
         try:
-            #remove leading zero if there is one
+            #remove leading zero from textbox if there is one
             if len(text) > 1 and text[0] == "0":
                 textbox.set_val(text[1:])
 
             #update graph
-            new_min_profit_threshold = float(self.min_threshold_textbox.text)
-            new_inflation = float(self.inflation_textbox.text)
-            new_chance_of_profit_list = self.presenter.get_chance_of_profit_list(new_min_profit_threshold, new_inflation)
-            self.chart.set_ydata(new_chance_of_profit_list)
-            self.fig.canvas.draw_idle() #forces the graph to redraw with the new data
+            self.recalculate_graph()
 
         except ValueError:
             root = Tk()
             root.withdraw() #the root has to be created and withrawn otherwise a blank window will appear in the background
             messagebox.showerror("Input Error", "Only numbers are allowed!")
+
+    def recalculate_graph(self):
+        list_of_new_chance_of_profit_lists = []
+        new_min_profit_threshold = float(self.min_threshold_textbox.text)
+        new_inflation = float(self.inflation_textbox.text)
+
+        for i, index_status in enumerate(self.indices_checkbuttons.get_status()):
+            if index_status:
+                index_name = self.indices_checkbutton_options[i]
+                list_of_new_chance_of_profit_lists.append(self.presenter.get_chance_of_profit_list(index_name, new_min_profit_threshold, new_inflation))
+            else:
+                list_of_new_chance_of_profit_lists.append([])
+
+        self.update_chart_lines(list_of_new_chance_of_profit_lists)
+
+    def update_chart_lines(self, new_lines):
+        for i, new_line in enumerate(new_lines):
+            if new_line == []:
+                self.chart_lines[i].set_visible(False)
+            else:
+                self.chart_lines[i].set_ydata(new_line)
+                self.chart_lines[i].set_visible(True)
+
+        self.fig.canvas.draw_idle() #forces the graph to redraw with the new data

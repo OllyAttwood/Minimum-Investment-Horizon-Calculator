@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy.interpolate import make_interp_spline
+import data_locations
 
 #calculates the compound returns for all periods (windows) of a given size in years
 def calculate_rolling_window_returns(window_size, annual_returns):
@@ -19,6 +20,10 @@ def calculate_chance_of_profit(window_returns, minimum_profit_percentage_thresho
             return 100
         else:
             return 0
+
+    #if there is no data for this window size, no point should be displayed on the graph
+    if len(profit_loss_counts) == 0:
+        return np.nan
 
     num_profit_windows = profit_loss_counts[True]
     num_loss_windows = profit_loss_counts[False]
@@ -44,8 +49,8 @@ def process_annual_returns_from_file_path(annual_returns_path, inflation):
     return annual_returns
 
 #function for the presenter class to call
-def get_profit_chances(minimum_profit_percentage_threshold=0, inflation=0):
-    file_path = "/home/olly/Documents/programming/other/minimum_investment_horizon_calculator/data/sp500_annual_returns_slickcharts_com.csv"
+def get_profit_chances(index_name, minimum_profit_percentage_threshold=0, inflation=0):
+    file_path = data_locations.get_data_info()[index_name]
     annual_returns = process_annual_returns_from_file_path(file_path, inflation)
     window_sizes = range(1,30)
     window_returns_list = [calculate_rolling_window_returns(window_size, annual_returns) for window_size in window_sizes]
