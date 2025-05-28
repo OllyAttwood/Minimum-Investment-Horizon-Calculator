@@ -75,17 +75,6 @@ class View:
         self.update_chart_lines(list_of_new_chance_of_profit_lists)
 
     def update_chart_lines(self, new_lines, num_overall_animation_frames=24):
-        """
-        for i, new_line in enumerate(new_lines):
-            if new_line == []:
-                self.chart_lines[i].set_visible(False)
-            else:
-                self.chart_lines[i].set_ydata(new_line)
-                self.chart_lines[i].set_visible(True)
-
-        self.fig.canvas.draw_idle() #forces the graph to redraw with the new data
-        """
-
         self.animation_frames = []
         for i, new_line in enumerate(new_lines):
             self.animation_frames.append([])
