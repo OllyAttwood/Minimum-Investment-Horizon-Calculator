@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.widgets import CheckButtons, TextBox
 import matplotlib
+from matplotlib.animation import FuncAnimation
 from tkinter import messagebox, Tk
 import numpy as np
 
@@ -73,7 +74,8 @@ class View:
 
         self.update_chart_lines(list_of_new_chance_of_profit_lists)
 
-    def update_chart_lines(self, new_lines):
+    def update_chart_lines(self, new_lines, num_overall_animation_frames=24):
+        """
         for i, new_line in enumerate(new_lines):
             if new_line == []:
                 self.chart_lines[i].set_visible(False)
@@ -82,3 +84,31 @@ class View:
                 self.chart_lines[i].set_visible(True)
 
         self.fig.canvas.draw_idle() #forces the graph to redraw with the new data
+        """
+
+        self.animation_frames = []
+        for i, new_line in enumerate(new_lines):
+            self.animation_frames.append([])
+            if new_line != []: #if index line should be updated (checkbox is ticked)
+                orig_line = self.chart_lines[i].get_ydata()
+                new_line = np.array(new_line)
+                #print("---------", orig_line, new_line)
+                if np.isnan(orig_line).all(): #if the line isn't yet being displayed on the graph
+                    for frame_num in range(num_overall_animation_frames):
+                        self.animation_frames[i].append(new_line) #just adds the new line (each frame is the same as no animation is needed)
+                else:
+                    line_increase_per_frame = (new_line - orig_line) / num_overall_animation_frames
+                    for frame_num in range(num_overall_animation_frames):
+                        new_frame = orig_line + (line_increase_per_frame * (frame_num + 1))
+                        self.animation_frames[i].append(new_frame)
+
+        self.animation = FuncAnimation(self.fig, self.animate_chart, interval=20, frames=num_overall_animation_frames, repeat=False)
+        self.fig.canvas.draw_idle() #forces the graph to redraw with the new data - otherwise it sometimes doesn't start animation until UI is interacted with further
+
+    def animate_chart(self, i):
+        for chart_line, new_line_data in zip(self.chart_lines, self.animation_frames):
+            if new_line_data == []:
+                chart_line.set_visible(False)
+            else:
+                chart_line.set_ydata(new_line_data[i])
+                chart_line.set_visible(True)
