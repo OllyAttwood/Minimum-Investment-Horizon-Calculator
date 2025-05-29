@@ -45,6 +45,10 @@ class View:
         self.inflation_textbox.set_val(0)
         self.inflation_textbox.on_submit(lambda text: self.chance_of_profit_settings_update(text, self.inflation_textbox))
 
+        #setup cursor movement event handling for annotations and highlighting of graph column
+        self.highlighted_column = None
+        self.fig.canvas.mpl_connect("motion_notify_event", self.mouse_move)
+
         plt.show()
 
     def chance_of_profit_settings_update(self, text, textbox):
@@ -102,3 +106,18 @@ class View:
             else:
                 chart_line.set_ydata(new_line_data[i])
                 chart_line.set_visible(True)
+
+    def mouse_move(self, event):
+        x = event.xdata
+
+        #remove previous highlighted column
+        if self.highlighted_column != None:
+            self.highlighted_column.remove()
+            self.highlighted_column = None #needed otherwise error occurs when cursor leaves graph
+
+        #add highlighted column in new position
+        if event.inaxes == self.ax: #if the cursor is within the graph area
+            x = round(x)
+            self.highlighted_column = self.ax.axvspan(x-0.5, x+0.5, alpha=0.3)
+
+        self.fig.canvas.draw_idle() #forces the graph to redraw
