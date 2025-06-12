@@ -6,7 +6,7 @@ from tkinter import messagebox, Tk
 import numpy as np
 
 class View:
-    def __init__(self, presenter, chance_of_profit_list, index_names):
+    def __init__(self, presenter, chance_of_profit_list, min_max_median_data, index_names):
         self.presenter = presenter
         self.indices_checkbutton_options = index_names
         matplotlib.rcParams['toolbar'] = 'None' #removes matplotlib toolbar
@@ -45,8 +45,11 @@ class View:
         self.inflation_textbox.set_val(0)
         self.inflation_textbox.on_submit(lambda text: self.chance_of_profit_settings_update(text, self.inflation_textbox))
 
-        #setup cursor movement event handling for annotations and highlighting of graph column
+        #setup cursor movement event handling for highlighting of graph column and min/max/median popup
         self.highlighted_column = None
+        self.index_popup = None
+        self.min_max_median_index_data = [[]] * len(index_names)
+        self.min_max_median_index_data[0] = min_max_median_data
         self.fig.canvas.mpl_connect("motion_notify_event", self.mouse_move)
 
         plt.show()
@@ -73,7 +76,9 @@ class View:
         for i, index_status in enumerate(self.indices_checkbuttons.get_status()):
             if index_status:
                 index_name = self.indices_checkbutton_options[i]
-                list_of_new_chance_of_profit_lists.append(self.presenter.get_chance_of_profit_list(index_name, new_min_profit_threshold, new_inflation))
+                index_profit_data = self.presenter.get_chance_of_profit_list(index_name, new_min_profit_threshold, new_inflation)
+                list_of_new_chance_of_profit_lists.append(index_profit_data["profit_chances"])
+                self.min_max_median_index_data[i] = index_profit_data["min_max_median"]
             else:
                 list_of_new_chance_of_profit_lists.append([])
 
@@ -116,8 +121,58 @@ class View:
             self.highlighted_column = None #needed otherwise error occurs when cursor leaves graph
 
         #add highlighted column in new position
+        #also add min/max/median textbox if cursor is close enough
         if event.inaxes == self.ax: #if the cursor is within the graph area
+            #highlight column
             x = round(x)
             self.highlighted_column = self.ax.axvspan(x-0.5, x+0.5, alpha=0.3)
 
+            #add min/max/median popup if cursor is close enough
+            y = event.ydata
+            index_data_to_display = self.get_nearest_index(x, y)
+            self.update_index_popup(index_data_to_display, x, y)
+
         self.fig.canvas.draw_idle() #forces the graph to redraw
+
+    #determine which index line on the chart is closest to the cursor (returns None if none are close enough)
+    def get_nearest_index(self, x, y, min_distance=3):
+        nearest_index = None
+        nearest_distance = float("inf")
+
+        #check each index graph lines to find which one is closest to the cursor (if any of them are close enough)
+        for i, index_status in enumerate(self.indices_checkbuttons.get_status()):
+            distance = abs(y - self.chart_lines[i].get_ydata()[x])
+
+            if index_status and distance < min_distance and (nearest_index is None or distance < nearest_distance):
+                nearest_index = i
+                nearest_distance = distance
+
+        return nearest_index
+
+    #update the popup which shows the min/max/median data for the nearest index line to the cursor
+    def update_index_popup(self, index_num, x, y):
+        if self.index_popup is not None:
+            self.index_popup.set_visible(False)
+
+        if index_num is not None:
+            data_text = self.create_popup_text(self.min_max_median_index_data[index_num][x], index_num)
+            box_style = {"color": "blue", "alpha": 0.8}
+            self.index_popup = self.ax.text(x, y, data_text, bbox=box_style)
+
+    def create_popup_text(self, min_max_median_dict, index_num):
+        index_name = self.indices_checkbutton_options[index_num]
+        #r"$\bf{}$" is needed to make part of the text bold
+        full_string = r"$\bf{" + index_name + "}$"
+        full_string += "\n——————————————"
+        keys = ["min", "max", "median"]
+        row_titles = ["Worst Window:   ", "Best Window:      ", "Median Window: "]
+
+        for key, row_title in zip(keys, row_titles):
+            change_percentage = (min_max_median_dict[key] - 1) * 100 #convert the figure to a percentage value
+            change_percentage = round(change_percentage, 1) #round to one decimal place
+            full_string += "\n" + r"$\bf{" + row_title + "}$" + str(change_percentage) + "%"
+
+        #backslashes are needed in front of spaces otherwise the MathText formatting for the partial bold text removes the spaces
+        full_string = full_string.replace(" ", "\ ")
+
+        return full_string

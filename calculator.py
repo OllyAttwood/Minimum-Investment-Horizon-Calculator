@@ -60,4 +60,7 @@ def get_profit_chances(index_name, minimum_profit_percentage_threshold=0, inflat
     min_max_medians = [min_max_median(window_returns) for window_returns in window_returns_list]
     print(min_max_medians)
 
-    return chance_of_profit_list
+    return {
+        "profit_chances": chance_of_profit_list,
+        "min_max_median": min_max_medians
+    }
