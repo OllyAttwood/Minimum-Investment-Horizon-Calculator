@@ -16,13 +16,14 @@ class View:
         self.fig.set_figwidth(9)
         self.fig.subplots_adjust(bottom=0.3, right=0.7) #increases bottom space
 
+        self.index_colours = ["blue", "red", "yellow", "orange"]
         self.chart_lines = [[]] * len(index_names)
         for i in range(len(index_names)):
             line_data = [np.nan] * len(chance_of_profit_list) #initialise it with an empty line of the correct number of points
             if i == 0:
                 line_data = chance_of_profit_list
 
-            self.chart_lines[i] = plt.plot(line_data)[0]
+            self.chart_lines[i] = plt.plot(line_data, color=self.index_colours[i])[0]
         plt.ylim(top=105, bottom=0) #top is 105 rather than 100 so the graph line is still visible at 100
         plt.xlim(left=0)
         x_tick_positions = [0,4,9,14,19,24,29]
@@ -156,7 +157,7 @@ class View:
 
         if index_num is not None:
             data_text = self.create_popup_text(self.min_max_median_index_data[index_num][round(x)], index_num)
-            box_style = {"color": "blue", "alpha": 0.8}
+            box_style = {"color": self.index_colours[index_num], "alpha": 0.8}
             x += 1 #slightly adjust x so that cursor isn't too close to it
 
             #if cursor is near to right side, move the popup further left
