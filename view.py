@@ -130,7 +130,7 @@ class View:
             #add min/max/median popup if cursor is close enough
             y = event.ydata
             index_data_to_display = self.get_nearest_index(x, y)
-            self.update_index_popup(index_data_to_display, x, y)
+            self.update_index_popup(index_data_to_display, event.xdata, y)
 
         self.fig.canvas.draw_idle() #forces the graph to redraw
 
@@ -155,7 +155,7 @@ class View:
             self.index_popup.set_visible(False)
 
         if index_num is not None:
-            data_text = self.create_popup_text(self.min_max_median_index_data[index_num][x], index_num)
+            data_text = self.create_popup_text(self.min_max_median_index_data[index_num][round(x)], index_num)
             box_style = {"color": "blue", "alpha": 0.8}
             x += 1 #slightly adjust x so that cursor isn't too close to it
 
