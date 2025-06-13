@@ -157,6 +157,12 @@ class View:
         if index_num is not None:
             data_text = self.create_popup_text(self.min_max_median_index_data[index_num][x], index_num)
             box_style = {"color": "blue", "alpha": 0.8}
+            x += 1 #slightly adjust x so that cursor isn't too close to it
+
+            #if cursor is near to right side, move the popup further left
+            if x > 15:
+                x -= 13
+
             self.index_popup = self.ax.text(x, y, data_text, bbox=box_style)
 
     def create_popup_text(self, min_max_median_dict, index_num):
