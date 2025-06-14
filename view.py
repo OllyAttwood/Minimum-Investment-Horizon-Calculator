@@ -11,8 +11,8 @@ class View:
         self.indices_checkbutton_options = index_names
         matplotlib.rcParams['toolbar'] = 'None' #removes matplotlib toolbar
 
-        self.fig, self.ax = plt.subplots()
-        self.fig.set_figheight(6)
+        self.fig, self.ax = plt.subplots(num="Minimum Investment Horizon Calculator") #num is used as window title
+        self.fig.set_figheight(7)
         self.fig.set_figwidth(9)
         self.fig.subplots_adjust(bottom=0.3, right=0.7) #increases bottom space
 
@@ -29,6 +29,10 @@ class View:
         x_tick_positions = [0,4,9,14,19,24,29]
         self.ax.set_xticks(ticks=x_tick_positions, labels=[tick+1 for tick in x_tick_positions])
 
+        plt.title("Chance of Profit Over Time")
+        plt.xlabel("Number of Years")
+        plt.ylabel("Probability of Beating\nthe Minimum Profit Threshold (%)")
+
         indices_ax = plt.axes([0.71, 0.5, 0.27, 0.2])
         indices_ax.set_facecolor("#90D5FF")
         self.indices_checkbuttons = CheckButtons(indices_ax, self.indices_checkbutton_options)
@@ -36,12 +40,12 @@ class View:
         self.indices_checkbuttons.set_active(0)
         self.indices_checkbuttons.on_clicked(lambda label: self.recalculate_graph()) #label parameter is not needed
 
-        min_threshold_textbox_ax = plt.axes([0.3, 0.15, 0.4, 0.075])
+        min_threshold_textbox_ax = plt.axes([0.3, 0.13, 0.4, 0.075])
         self.min_threshold_textbox = TextBox(min_threshold_textbox_ax, "Minimum profit threshold (%): ")
         self.min_threshold_textbox.set_val(str(0))
         self.min_threshold_textbox.on_submit(lambda text: self.chance_of_profit_settings_update(text, self.min_threshold_textbox))
 
-        inflation_textbox_ax = plt.axes([0.3, .05, 0.4, 0.075])
+        inflation_textbox_ax = plt.axes([0.3, .03, 0.4, 0.075])
         self.inflation_textbox = TextBox(inflation_textbox_ax, "Adjust for inflation of (%): ")
         self.inflation_textbox.set_val(0)
         self.inflation_textbox.on_submit(lambda text: self.chance_of_profit_settings_update(text, self.inflation_textbox))
