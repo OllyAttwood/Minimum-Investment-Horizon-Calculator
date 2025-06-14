@@ -156,7 +156,7 @@ class View:
             self.index_popup.set_visible(False)
 
         if index_num is not None:
-            data_text = self.create_popup_text(self.min_max_median_index_data[index_num][round(x)], index_num)
+            data_text = self.create_popup_text(self.min_max_median_index_data[index_num][round(x)], index_num, round(x)+1)
             box_style = {"color": self.index_colours[index_num], "alpha": 0.8}
             x += 1 #slightly adjust x so that cursor isn't too close to it
 
@@ -166,13 +166,13 @@ class View:
 
             self.index_popup = self.ax.text(x, y, data_text, bbox=box_style)
 
-    def create_popup_text(self, min_max_median_dict, index_num):
+    def create_popup_text(self, min_max_median_dict, index_num, window_size):
         index_name = self.indices_checkbutton_options[index_num]
         #r"$\bf{}$" is needed to make part of the text bold
-        full_string = r"$\bf{" + index_name + "}$"
+        full_string = r"$\bf{" + index_name + " [" + str(window_size) + "-Year Periods]" + "}$"
         full_string += "\n——————————————"
         keys = ["min", "max", "median"]
-        row_titles = ["Worst Window:   ", "Best Window:      ", "Median Window: "]
+        row_titles = ["Worst Period:   ", "Best Period:      ", "Median Period: "]
 
         for key, row_title in zip(keys, row_titles):
             change_percentage = (min_max_median_dict[key] - 1) * 100 #convert the figure to a percentage value
