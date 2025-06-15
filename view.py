@@ -96,7 +96,7 @@ class View:
             if new_line != []: #if index line should be updated (checkbox is ticked)
                 orig_line = self.chart_lines[i].get_ydata()
                 new_line = np.array(new_line)
-                #print("---------", orig_line, new_line)
+                
                 if np.isnan(orig_line).all(): #if the line isn't yet being displayed on the graph
                     for frame_num in range(num_overall_animation_frames):
                         self.animation_frames[i].append(new_line) #just adds the new line (each frame is the same as no animation is needed)

@@ -55,10 +55,7 @@ def get_profit_chances(index_name, minimum_profit_percentage_threshold=0, inflat
     window_sizes = range(1,30)
     window_returns_list = [calculate_rolling_window_returns(window_size, annual_returns) for window_size in window_sizes]
     chance_of_profit_list = [calculate_chance_of_profit(window_returns, minimum_profit_percentage_threshold) for window_returns in window_returns_list]
-    print(chance_of_profit_list)
-    print(window_returns_list)
     min_max_medians = [min_max_median(window_returns) for window_returns in window_returns_list]
-    print(min_max_medians)
 
     return {
         "profit_chances": chance_of_profit_list,
