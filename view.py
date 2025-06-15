@@ -4,6 +4,7 @@ import matplotlib
 from matplotlib.animation import FuncAnimation
 from tkinter import messagebox, Tk
 import numpy as np
+import logging
 
 class View:
     def __init__(self, presenter, chance_of_profit_list, min_max_median_data, index_names):
@@ -145,12 +146,15 @@ class View:
         nearest_distance = float("inf")
 
         #check each index graph lines to find which one is closest to the cursor (if any of them are close enough)
-        for i, index_status in enumerate(self.indices_checkbuttons.get_status()):
-            distance = abs(y - self.chart_lines[i].get_ydata()[x])
+        try:
+            for i, index_status in enumerate(self.indices_checkbuttons.get_status()):
+                distance = abs(y - self.chart_lines[i].get_ydata()[x])
 
-            if index_status and distance < min_distance and (nearest_index is None or distance < nearest_distance):
-                nearest_index = i
-                nearest_distance = distance
+                if index_status and distance < min_distance and (nearest_index is None or distance < nearest_distance):
+                    nearest_index = i
+                    nearest_distance = distance
+        except IndexError:
+            logging.info("Handled the rightmost column being outside the data range (caught an IndexError produced by this)")
 
         return nearest_index
 
