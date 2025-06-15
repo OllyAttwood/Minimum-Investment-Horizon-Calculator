@@ -52,7 +52,7 @@ def process_annual_returns_from_file_path(annual_returns_path, inflation):
 def get_profit_chances(index_name, minimum_profit_percentage_threshold=0, inflation=0):
     file_path = data_locations.get_data_info()[index_name]
     annual_returns = process_annual_returns_from_file_path(file_path, inflation)
-    window_sizes = range(1,30)
+    window_sizes = range(1,31)
     window_returns_list = [calculate_rolling_window_returns(window_size, annual_returns) for window_size in window_sizes]
     chance_of_profit_list = [calculate_chance_of_profit(window_returns, minimum_profit_percentage_threshold) for window_returns in window_returns_list]
     min_max_medians = [min_max_median(window_returns) for window_returns in window_returns_list]
