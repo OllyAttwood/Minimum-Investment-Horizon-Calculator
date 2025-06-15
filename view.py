@@ -35,8 +35,8 @@ class View:
         plt.ylabel("Probability of Beating\nthe Minimum Profit Threshold (%)")
 
         indices_ax = plt.axes([0.71, 0.5, 0.27, 0.2])
-        indices_ax.set_facecolor("#90D5FF")
-        self.indices_checkbuttons = CheckButtons(indices_ax, self.indices_checkbutton_options)
+        indices_ax.set_facecolor("grey")
+        self.indices_checkbuttons = CheckButtons(indices_ax, self.indices_checkbutton_options, label_props={"color": self.index_colours})
         #modify the checkboxes appearance - https://stackoverflow.com/questions/42421363/customize-check-buttons-in-matplotlib
         self.indices_checkbuttons.set_active(0)
         self.indices_checkbuttons.on_clicked(lambda label: self.recalculate_graph()) #label parameter is not needed
