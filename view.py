@@ -7,7 +7,10 @@ import numpy as np
 import logging
 
 class View:
+    """The UI for the program"""
+
     def __init__(self, presenter, chance_of_profit_list, min_max_median_data, index_names):
+        """Sets up the matplotlib UI"""
         self.presenter = presenter
         self.indices_checkbutton_options = index_names
         matplotlib.rcParams['toolbar'] = 'None' #removes matplotlib toolbar
@@ -61,6 +64,8 @@ class View:
         plt.show()
 
     def chance_of_profit_settings_update(self, text, textbox):
+        """This function is called whenever the settings are updated by the user, e.g. minimum profit threshold or inflation"""
+        #try statement needed to catch the IndexError when the graph is hovered over where the  data doesn't cover i.e. the right-most column
         try:
             #remove leading zero from textbox if there is one
             if len(text) > 1 and text[0] == "0":
@@ -75,6 +80,7 @@ class View:
             messagebox.showerror("Input Error", "Only numbers are allowed!")
 
     def recalculate_graph(self):
+        """Re-calculates the changes to the graph and updates it"""
         list_of_new_chance_of_profit_lists = []
         new_min_profit_threshold = float(self.min_threshold_textbox.text)
         new_inflation = float(self.inflation_textbox.text)
@@ -91,6 +97,7 @@ class View:
         self.update_chart_lines(list_of_new_chance_of_profit_lists)
 
     def update_chart_lines(self, new_lines, num_overall_animation_frames=24):
+        """Makes changes to the actual graph object from the given parameters"""
         self.animation_frames = []
         for i, new_line in enumerate(new_lines):
             self.animation_frames.append([])
@@ -111,6 +118,7 @@ class View:
         self.fig.canvas.draw_idle() #forces the graph to redraw with the new data - otherwise it sometimes doesn't start animation until UI is interacted with further
 
     def animate_chart(self, i):
+        """Specifies how the graph lines should be animated when changes are made"""
         for chart_line, new_line_data in zip(self.chart_lines, self.animation_frames):
             if new_line_data == []:
                 chart_line.set_visible(False)
@@ -119,6 +127,9 @@ class View:
                 chart_line.set_visible(True)
 
     def mouse_move(self, event):
+        """Handles mouse movement in the graph area. Specifically it controls the column highlighting and
+        the min/max/median popups
+        """
         x = event.xdata
 
         #remove previous highlighted column
@@ -140,8 +151,8 @@ class View:
 
         self.fig.canvas.draw_idle() #forces the graph to redraw
 
-    #determine which index line on the chart is closest to the cursor (returns None if none are close enough)
     def get_nearest_index(self, x, y, min_distance=3):
+        """Determines which index line on the chart is closest to the cursor (returns None if none are close enough)"""
         nearest_index = None
         nearest_distance = float("inf")
 
@@ -158,8 +169,8 @@ class View:
 
         return nearest_index
 
-    #update the popup which shows the min/max/median data for the nearest index line to the cursor
     def update_index_popup(self, index_num, x, y):
+        """Update the popup which shows the min/max/median data for the nearest index line to the cursor"""
         if self.index_popup is not None:
             self.index_popup.set_visible(False)
 
@@ -175,6 +186,7 @@ class View:
             self.index_popup = self.ax.text(x, y, data_text, bbox=box_style)
 
     def create_popup_text(self, min_max_median_dict, index_num, window_size):
+        """Calculates what the text content of a popup should be"""
         index_name = self.indices_checkbutton_options[index_num]
         #r"$\bf{}$" is needed to make part of the text bold
         full_string = r"$\bf{" + index_name + " [" + str(window_size) + "-Year Periods]" + "}$"
