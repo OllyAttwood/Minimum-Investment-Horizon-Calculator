@@ -9,20 +9,28 @@ import logging
 class View:
     """The UI for the program"""
 
-    def __init__(self, presenter, chance_of_profit_list, min_max_median_data, index_names):
+    def __init__(self, presenter, chance_of_profit_list, first_index_min_max_median_data, index_names):
         """Sets up the matplotlib UI"""
         self.presenter = presenter
         self.indices_checkbutton_options = index_names
         matplotlib.rcParams['toolbar'] = 'None' #removes matplotlib toolbar
 
+        self.init_graph_setup(chance_of_profit_list)
+        self.init_graph_widgets()
+        #setup cursor movement event handling for highlighting of graph column and min/max/median popup
+        self.init_mouse_movement_handler(first_index_min_max_median_data)
+
+        plt.show()
+
+    def init_graph_setup(self, chance_of_profit_list):
         self.fig, self.ax = plt.subplots(num="Minimum Investment Horizon Calculator") #num is used as window title
         self.fig.set_figheight(7)
         self.fig.set_figwidth(9)
         self.fig.subplots_adjust(bottom=0.3, right=0.7) #increases bottom space
 
         self.index_colours = ["blue", "red", "yellow", "orange"]
-        self.chart_lines = [[]] * len(index_names)
-        for i in range(len(index_names)):
+        self.chart_lines = [[]] * len(self.indices_checkbutton_options)
+        for i in range(len(self.indices_checkbutton_options)):
             line_data = [np.nan] * len(chance_of_profit_list) #initialise it with an empty line of the correct number of points
             if i == 0:
                 line_data = chance_of_profit_list
@@ -37,6 +45,8 @@ class View:
         plt.xlabel("Number of Years")
         plt.ylabel("Probability of Beating\nthe Minimum Profit Threshold (%)")
 
+    def init_graph_widgets(self):
+        """Sets up the extra widgets outside the graph such as textboxes and checkboxes"""
         indices_ax = plt.axes([0.71, 0.5, 0.27, 0.2])
         indices_ax.set_facecolor("grey")
         self.indices_checkbuttons = CheckButtons(indices_ax, self.indices_checkbutton_options, label_props={"color": self.index_colours})
@@ -54,14 +64,12 @@ class View:
         self.inflation_textbox.set_val(0)
         self.inflation_textbox.on_submit(lambda text: self.chance_of_profit_settings_update(text, self.inflation_textbox))
 
-        #setup cursor movement event handling for highlighting of graph column and min/max/median popup
+    def init_mouse_movement_handler(self, first_index_min_max_median_data):
         self.highlighted_column = None
         self.index_popup = None
-        self.min_max_median_index_data = [[]] * len(index_names)
-        self.min_max_median_index_data[0] = min_max_median_data
+        self.min_max_median_index_data = [[]] * len(self.indices_checkbutton_options)
+        self.min_max_median_index_data[0] = first_index_min_max_median_data
         self.fig.canvas.mpl_connect("motion_notify_event", self.mouse_move)
-
-        plt.show()
 
     def chance_of_profit_settings_update(self, text, textbox):
         """This function is called whenever the settings are updated by the user, e.g. minimum profit threshold or inflation"""
