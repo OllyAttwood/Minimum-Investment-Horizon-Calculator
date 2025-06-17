@@ -1,3 +1,3 @@
-![Popup Demo Gif](https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExM2o5dzhmZzFrM3h0M290cmE2eW1uMGhwbHh2NmFwdXJwamtuczhhNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/uAcRgnIWiD8Tc76FDN/giphy.gif)
-![Indices Demo Gif](https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2RlNHRmcG8yYnltbWI1NzdqazVnMmN6ZXI5NjF6N2czdGR2bTZrZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Y55PbL6kc0Kd7eEG0n/giphy.gif)
-![Animation Demo Gif](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2tpMjA1YmVnNnFqejRyaTFmejR5ZGEzcG9pYjd3bjZndWxxb25uNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Bmm3t0vGaGbMU5s8WM/giphy.gif)
+![Popup Demo Gif](https://media.giphy.com/media/EquvNs4cRLLthn926Z/giphy.gif)
+![Indices Demo Gif](https://media.giphy.com/media/dcnzyAzaTL2hFegNgk/giphy.gif)
+![Animation Demo Gif](https://media.giphy.com/media/8SpvRhEJ1YW7ggV78Q/giphy.gif)
