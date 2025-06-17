@@ -28,6 +28,9 @@ import data_locations
     ]
 )
 def test_get_profit_chances(index_name, minimum_profit_percentage_threshold, inflation, output):
+    """Test function for the calculator.get_profit_chances() function.
+    Tests all the possible indices with varying values for minimum profit threshold and inflation.
+    """
     profit_chances = calculator.get_profit_chances(index_name, minimum_profit_percentage_threshold, inflation)["profit_chances"][0]
     #use approx() as we are doing float comparison
     assert profit_chances == approx(output)
@@ -42,6 +45,9 @@ def test_get_profit_chances(index_name, minimum_profit_percentage_threshold, inf
     ]
 )
 def test_process_annual_returns_from_file_path(index_name, inflation, output):
+    """Test function for the calculator.process_annual_returns_from_file_path() function.
+    Tests all the possible indices with varying values for inflation.
+    """
     file_path = data_locations.get_data_info()[index_name]
     annual_return = calculator.process_annual_returns_from_file_path(file_path, inflation)["Return"][0]
     assert annual_return == approx(output)
@@ -54,6 +60,9 @@ def test_process_annual_returns_from_file_path(index_name, inflation, output):
     ]
 )
 def test_calculate_rolling_window_returns(window_size, annual_returns, output):
+    """Test function for the calculator.calculate_rolling_window_returns() function.
+    Tests with varying values for window size and annual_returns.
+    """
     annual_returns = pd.DataFrame(data=annual_returns, columns=["Return"])
     window_returns = calculator.calculate_rolling_window_returns(window_size, annual_returns)
     assert np.all(np.isclose(window_returns, output))
@@ -68,6 +77,9 @@ def test_calculate_rolling_window_returns(window_size, annual_returns, output):
     ]
 )
 def test_calculate_chance_of_profit(window_returns, minimum_profit_percentage_threshold, output):
+    """Test function for the calculator.calculate_chance_of_profit() function.
+    Tests with varying values for window returns and minimum profit threshold.
+    """
     window_returns = pd.Series(window_returns)
     chance = calculator.calculate_chance_of_profit(window_returns, minimum_profit_percentage_threshold)
     assert chance == approx(output)
