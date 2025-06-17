@@ -29,7 +29,7 @@ class View:
         self.fig.subplots_adjust(bottom=0.3, right=0.7) #increases bottom space
 
         self.index_colours = ["blue", "red", "yellow", "orange"]
-        self.chart_lines = [[]] * len(self.indices_checkbutton_options)
+        self.chart_lines = [[]] * len(self.indices_checkbutton_options) #empty lists at first just to create the list of the correct size
         for i in range(len(self.indices_checkbutton_options)):
             line_data = [np.nan] * len(chance_of_profit_list) #initialise it with an empty line of the correct number of points
             if i == 0:
