@@ -18,4 +18,5 @@ class Presenter:
         """Presenter function which calls the calculator function"""
         return calculator.get_profit_chances(index_name, minimum_profit_percentage_threshold, inflation)
 
-presenter = Presenter()
+if __name__ == "__main__":
+    presenter = Presenter()
